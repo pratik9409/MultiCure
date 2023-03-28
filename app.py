@@ -17,7 +17,7 @@ from tensorflow.keras.applications.vgg16 import preprocess_input
 
 # Loading Models
 covid_model = load_model('models/covid.h5')
-braintumor_model = load_model('models/braintumor.h5')
+braintumor_model = load_model('models/brain_tumor.h5')
 alzheimer_model = load_model('models/alzheimer_model.h5')
 
 diabetes_model = pickle.load(open('models/diabetes.pkl','rb'))
@@ -196,7 +196,7 @@ def resultbt():
             img = cv2.imread('static/uploads/'+filename)
             img = crop_imgs([img])
             img = img.reshape(img.shape[1:])
-            img = preprocess_imgs([img], (224, 224))
+            img = preprocess_imgs([img], (240, 240))
             pred = braintumor_model.predict(img)
             if pred < 0.5:
                 pred = 0
