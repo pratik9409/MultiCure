@@ -1,17 +1,11 @@
-# Multi_Cure
-In this WebApp you can find 10 diseases under 1 app. That would be very useful for the user to check. It has some details about the disease such as their symptoms and some details about the disease.
-This webapp was developed using Flask Web Framework. The models used to predict the diseases were trained on large Datasets. All the links for datasets and the python notebooks used for model creation are mentioned below in this readme. The webapp can predict following Diseases:
+# MedAI Diagnoser
+This web application provides a user-friendly interface for diagnosing various medical conditions using machine learning models. Users can upload medical images or provide relevant information for diagnosis, and the application will provide predictions based on trained models.
 
-Alzheimer
-Breast Cancer
-Brain Tumor
-Covid-19
-Diabetes 
-Heart Disease
-Kidney Disease
-Liver Disease
-Malaria
-Pneumonia
+## Features:
+**Diagnosis for Multiple Conditions**: Includes models for diagnosing conditions such as COVID-19, brain tumors, Alzheimer's disease, diabetes, breast cancer, pneumonia, heart disease, kidney disease, liver disease, and malaria.
+**Image Upload**: Users can upload medical images for analysis, which are then processed by the respective image processing pipelines before making predictions.
+**Input Form**: For conditions that require input data (such as diabetes and heart disease), users can fill out a form with relevant information for diagnosis.
+**Real-time Chatbot**: Users can interact with a chatbot powered by state-of-the-art language models to ask questions and receive medical advice or information.
 
 
 
@@ -37,7 +31,12 @@ Pneumonia
 | Pneumonia      | 92.23%        | [Pneumonia Data](https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia)                | Deep Learning|
 
 
-
+# Technologies Used:
+Backend: Flask framework in Python
+Machine Learning Models: TensorFlow, Scikit-learn, OpenCV
+Image Processing: PIL, OpenCV
+Language Models: GPT-based language models for the chatbot
+Generative AI, LLM
 # Steps to run this application in your system
 
 #### a. Clone or download the repo.
