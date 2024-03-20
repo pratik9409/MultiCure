@@ -1,0 +1,1 @@
+Run all the python notebooks for the models to be saved

@@ -15,9 +15,25 @@ import numpy as np
 from tensorflow.keras.applications.vgg16 import preprocess_input
 
 
+from flask import Flask, render_template, jsonify, request
+from src.helper import download_hugging_face_embeddings
+from langchain.vectorstores import Pinecone
+import pinecone
+from langchain.prompts import PromptTemplate
+from langchain.llms import CTransformers
+from langchain.chains import RetrievalQA
+from dotenv import load_dotenv
+from src.prompt import *
+import os
+
+app = Flask(__name__)
+
+load_dotenv()
+
+
 # Loading Models
 covid_model = load_model('models/covid.h5')
-braintumor_model = load_model('models/brain_tumor.h5')
+braintumor_model = load_model('models/braintumor.h5')
 alzheimer_model = load_model('models/alzheimer_model.h5')
 
 diabetes_model = pickle.load(open('models/diabetes.pkl','rb'))
@@ -196,7 +212,7 @@ def resultbt():
             img = cv2.imread('static/uploads/'+filename)
             img = crop_imgs([img])
             img = img.reshape(img.shape[1:])
-            img = preprocess_imgs([img], (240, 240))
+            img = preprocess_imgs([img], (224, 224))
             pred = braintumor_model.predict(img)
             if pred < 0.5:
                 pred = 0
@@ -380,7 +396,7 @@ def resultl():
         lastname = request.form['lastname']
         email = request.form['email']
         phone = request.form['phone']
-        gender = request.form['gender']
+        gender = int(request.form['gender'])
         age = request.form['age']
         total_bilirubin = request.form['total_bilirubin']
         direct_bilirubin = request.form['direct_bilirubin']
@@ -391,8 +407,8 @@ def resultl():
         albumin = request.form['albumin']
         albumin_globulin_ratio = request.form['albumin_globulin_ratio']
         pred = liver_model.predict(
-            np.array([age, total_bilirubin, direct_bilirubin, alkaline_phosphate, alamine_amino, aspartate_amino, total_protiens, albumin, albumin_globulin_ratio]).reshape(1, -1))
-        return render_template('resultk.html', fn=firstname, ln=lastname, age=age, gender=gender, r=pred)
+            np.array([gender, age, total_bilirubin, direct_bilirubin, alkaline_phosphate, alamine_amino, aspartate_amino, total_protiens, albumin, albumin_globulin_ratio]).reshape(1, -1))
+        return render_template('resultk.html', fn=firstname, ln=lastname, age=age, gender="Male" if gender == 0 else "Female", r=pred)
 
 
         
@@ -439,6 +455,65 @@ def add_header(response):
     response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response
+
+
+
+
+
+
+
+PINECONE_API_KEY = os.environ.get('PINECONE_API_KEY')
+PINECONE_API_ENV = os.environ.get('PINECONE_API_ENV')
+
+
+embeddings = download_hugging_face_embeddings()
+
+#Initializing the Pinecone
+pinecone.init(api_key=PINECONE_API_KEY,
+              environment=PINECONE_API_ENV)
+
+index_name="medical-chatbot"
+
+#Loading the index
+docsearch=Pinecone.from_existing_index(index_name, embeddings)
+
+
+PROMPT=PromptTemplate(template=prompt_template, input_variables=["context", "question"])
+
+chain_type_kwargs={"prompt": PROMPT}
+
+llm=CTransformers(model="model/llama-2-7b-chat.ggmlv3.q8_0.bin",
+                  model_type="llama",
+                  config={'max_new_tokens':512,
+                          'temperature':0.8})
+
+
+qa=RetrievalQA.from_chain_type(
+    llm=llm, 
+    chain_type="stuff", 
+    retriever=docsearch.as_retriever(search_kwargs={'k': 2}),
+    return_source_documents=True, 
+    chain_type_kwargs=chain_type_kwargs)
+
+
+
+@app.route("/chat")
+def index():
+    return render_template('chat.html')
+
+
+
+@app.route("/get", methods=["GET", "POST"])
+def chat():
+    msg = request.form["msg"]
+    input = msg
+    print(input)
+    result=qa({"query": input})
+    print("Response : ", result["result"])
+    return str(result["result"])
+
+
+
 
 
 if __name__ == '__main__':
