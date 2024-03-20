@@ -9,7 +9,8 @@ This web application provides a user-friendly interface for diagnosing various m
 
 
 
-![ss](https://user-images.githubusercontent.com/67755812/217238738-f28f759c-934a-4da7-9729-8306f66952b3.png)
+
+![home](https://github.com/pratik9409/Multi_cure/assets/67755812/fd7ce100-31a8-4506-8556-d386ed4aba8d)
 
 
 
@@ -30,6 +31,9 @@ This web application provides a user-friendly interface for diagnosing various m
 | Malaria        | 93.70%        | [Malaria Data](https://www.kaggle.com/datasets/iarunava/cell-images-for-detecting-malaria)               | Deep Learning|
 | Pneumonia      | 92.23%        | [Pneumonia Data](https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia)                | Deep Learning|
 
+# Medical Chatbot
+
+![chat_pic](https://github.com/pratik9409/Multi_cure/assets/67755812/75ed7cdf-b08e-4b12-b260-c094dbeaed77)
 
 # Technologies Used:
 Backend: Flask framework in Python
